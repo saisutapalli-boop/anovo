@@ -37,7 +37,7 @@ export default function RequestInsuranceCardModal({
           <p className="mt-1 text-sm font-semibold text-[#383838]">{prescriber}</p>
         </div>
         <div className="rounded-xl border border-[#e5e5e5] bg-[#f5f5f5] p-3 text-sm leading-relaxed text-[#4d4e50]">
-          Requesting pharmacy benefit card for Signifor LAR (NDC 00078-0654-61) · Aetna BIN 004336 / PCN ADV / Member
+          Requesting insurance card for Voxzogo (vosoritide) (NDC 00078-0654-61) · Aetna BIN 004336 / PCN ADV / Member
           AET847293. Required to confirm specialty tier coverage and determine PA pathway before drug-specific BI can
           begin.
         </div>

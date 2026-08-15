@@ -6,6 +6,11 @@ import Breadcrumb from '@/components/layout/Breadcrumb'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import ProgressBar from '@/components/ui/ProgressBar'
+import Toast from '@/components/ui/Toast'
+import CaseActivityTimeline from '@/components/ui/CaseActivityTimeline'
+import { useToast } from '@/hooks/useToast'
+import { useDispensingCase } from '@/context/DispensingCaseContext'
+import { CASE_REF, HISTORICAL_EVENTS, SIMULATED_EVENTS } from '@/data/sarahMitchellTimeline'
 
 const REQUIREMENTS = [
   'Confirmed documentation of elevated baseline clinical serum enzyme levels',
@@ -23,8 +28,6 @@ const COMPLETENESS = [
   { title: 'Medical Necessity Letter', status: 'Passed Verification', pass: true },
 ]
 
-const SIM_STEPS = ['Eligibility', 'Exceptions', 'ePA', 'Dispensing']
-
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex w-full flex-col gap-4 rounded-xl border border-[#dddddd] bg-white p-6">
@@ -36,36 +39,41 @@ function SectionCard({ title, children }: { title: string; children: React.React
 
 export default function PriorAuthorizationDetailPage() {
   const { caseId } = useParams()
-  const [simStep, setSimStep] = useState(0)
+  const { setPaSimulationComplete } = useDispensingCase()
+  const { toast, showToast, clearToast } = useToast()
+  const [visibleCount, setVisibleCount] = useState(0)
   const [running, setRunning] = useState(false)
   const timerRef = useRef<number | null>(null)
 
+  const complete = visibleCount >= SIMULATED_EVENTS.length
+
   function runSimulation() {
-    if (running) return
+    if (running || complete) return
     setRunning(true)
-    setSimStep(1)
-    let step = 1
+    let count = visibleCount
     timerRef.current = window.setInterval(() => {
-      step += 1
-      if (step > SIM_STEPS.length) {
+      count += 1
+      setVisibleCount(count)
+      if (count >= SIMULATED_EVENTS.length) {
         window.clearInterval(timerRef.current!)
         setRunning(false)
-        return
+        setPaSimulationComplete(true)
+        showToast('PA simulation complete · case moved to Dispensing Queue', 'success')
       }
-      setSimStep(step)
-    }, 900)
+    }, 850)
   }
 
   useEffect(() => () => {
     if (timerRef.current) window.clearInterval(timerRef.current)
   }, [])
 
+  const events = [...HISTORICAL_EVENTS, ...SIMULATED_EVENTS.slice(0, visibleCount)]
+
   return (
     <AppShell active="prior-authorization" showNav={false}>
       <div className="flex w-full flex-col gap-6">
         <Breadcrumb
           trail={[
-            { label: 'Dashboard', href: '/dashboard' },
             { label: 'Prior Authorization', href: '/prior-authorization' },
             { label: 'Sarah Mitchell' },
           ]}
@@ -150,42 +158,27 @@ export default function PriorAuthorizationDetailPage() {
           </div>
         </SectionCard>
 
-        <div className="flex w-full flex-col gap-5 rounded-xl border border-[#dddddd] bg-white p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-base font-bold text-[#383838]">AI End-to-End PA Simulation</p>
-              <p className="text-sm text-[#666666]">
-                Automated payer check &rarr; exception handling &rarr; ePA &rarr; approval &rarr; dispensing
-              </p>
-            </div>
-            <Button onClick={runSimulation} disabled={running}>
-              {running ? 'Running simulation...' : `Run Simulation (Case ${caseId ?? '1'})`}
-            </Button>
-          </div>
-          <div className="flex w-full items-center gap-3">
-            {SIM_STEPS.map((label, i) => {
-              const step = i + 1
-              const done = step < simStep || (!running && simStep === SIM_STEPS.length)
-              const active = step === simStep && running
-              return (
-                <div key={label} className="flex flex-1 items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                        done ? 'bg-[#11a84e] text-white' : active ? 'bg-brand-teal text-white' : 'bg-[#eaeded] text-[#788a95]'
-                      }`}
-                    >
-                      {done ? '✓' : step}
-                    </span>
-                    <span className="whitespace-nowrap text-sm font-semibold text-[#383838]">{label}</span>
-                  </div>
-                  {i < SIM_STEPS.length - 1 && <div className="h-px flex-1 bg-[#e5e5e5]" />}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        <CaseActivityTimeline
+          title={`Sarah Mitchell · Case Timeline`}
+          subtitle={`${CASE_REF} · End-to-end PA activity`}
+          events={events}
+          dividerLabel="Today · Simulation Begins"
+          dividerIndex={HISTORICAL_EVENTS.length}
+          badge={
+            complete ? (
+              <Badge tone="success">
+                Simulation complete · {SIMULATED_EVENTS.length} of {SIMULATED_EVENTS.length} events
+              </Badge>
+            ) : (
+              <Button onClick={runSimulation} disabled={running}>
+                {running ? 'Running simulation...' : visibleCount > 0 ? 'Resume Simulation' : `Run Simulation (Case ${caseId ?? '1'})`}
+              </Button>
+            )
+          }
+        />
       </div>
+
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }

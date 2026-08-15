@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import FilterDropdown from '@/components/ui/FilterDropdown'
 import StatusChip from '@/components/ui/StatusChip'
 import Toast from '@/components/ui/Toast'
+import { useToast } from '@/hooks/useToast'
 
 const REPORT_TYPES = ['Referral Intake Summary', 'Prior Authorization Outcomes', 'Dispensing & Cold-Chain', 'Compliance & REMS']
 const DATE_RANGES = ['Last 7 Days', 'Last 30 Days', 'Last Quarter', 'Year to Date']
@@ -33,14 +34,14 @@ export default function AuditReportsPage() {
     { id: '2', name: 'Compliance & REMS', range: 'Last Quarter', generatedAt: 'Jul 30, 2026' },
   ])
   const [generating, setGenerating] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+  const { toast, showToast, clearToast } = useToast()
 
   function generateReport() {
     setGenerating(true)
     setTimeout(() => {
       setReports((prev) => [{ id: String(Date.now()), name: reportType, range: dateRange, generatedAt: 'Just now' }, ...prev])
       setGenerating(false)
-      setToast(`${reportType} report generated`)
+      showToast(`${reportType} report generated`, 'success')
     }, 900)
   }
 
@@ -112,7 +113,7 @@ export default function AuditReportsPage() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setToast(`Downloading ${r.name}...`)}
+                    onClick={() => showToast(`Downloading ${r.name}...`, 'neutral')}
                     className="rounded-lg p-1.5 text-[#788a95] transition-colors hover:bg-white hover:text-brand-teal"
                     aria-label={`Download ${r.name}`}
                   >
@@ -125,7 +126,7 @@ export default function AuditReportsPage() {
         </div>
       </div>
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }

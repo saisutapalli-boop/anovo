@@ -7,6 +7,7 @@ import SearchInput from '@/components/ui/SearchInput'
 import FilterDropdown from '@/components/ui/FilterDropdown'
 import SidePanel from '@/components/ui/SidePanel'
 import Toast from '@/components/ui/Toast'
+import { useToast } from '@/hooks/useToast'
 
 type Role = 'Super Admin' | 'Intake Coordinator' | 'Benefit Investigator' | 'Pharmacist' | 'Auditor'
 type Status = 'Active' | 'Invited' | 'Suspended'
@@ -50,7 +51,7 @@ export default function UserManagementPage() {
   const [roleFilter, setRoleFilter] = useState('All Roles')
   const [inviting, setInviting] = useState(false)
   const [menuFor, setMenuFor] = useState<string | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
+  const { toast, showToast, clearToast } = useToast()
 
   const [inviteName, setInviteName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
@@ -81,7 +82,7 @@ export default function UserManagementPage() {
     setInviteName('')
     setInviteEmail('')
     setInviteRole('Intake Coordinator')
-    setToast(`Invitation sent to ${user.email}`)
+    showToast(`Invitation sent to ${user.email}`, 'success')
   }
 
   function toggleSuspend(user: AppUser) {
@@ -89,13 +90,13 @@ export default function UserManagementPage() {
       prev.map((u) => (u.id === user.id ? { ...u, status: u.status === 'Suspended' ? 'Active' : 'Suspended' } : u)),
     )
     setMenuFor(null)
-    setToast(user.status === 'Suspended' ? `${user.name} reactivated` : `${user.name} suspended`)
+    showToast(user.status === 'Suspended' ? `${user.name} reactivated` : `${user.name} suspended`, user.status === 'Suspended' ? 'success' : 'warning')
   }
 
   function removeUser(user: AppUser) {
     setUsers((prev) => prev.filter((u) => u.id !== user.id))
     setMenuFor(null)
-    setToast(`${user.name} removed from workspace`)
+    showToast(`${user.name} removed from workspace`, 'warning')
   }
 
   return (
@@ -251,7 +252,7 @@ export default function UserManagementPage() {
         </SidePanel>
       )}
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }

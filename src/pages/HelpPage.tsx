@@ -8,15 +8,15 @@ import Button from '@/components/ui/Button'
 const FAQS = [
   {
     q: 'How do I resolve an OCR review flag on a referral?',
-    a: 'Open the referral from the Referral Intakes list, review the flagged field under AI Extracted Fields, then either Edit the value or Confirm it if the OCR read is correct. Once every flagged field is confirmed and the pharmacy card is attached, Complete Intake becomes available.',
+    a: 'Open the referral from the Referral Intakes list, review the flagged field under AI Extracted Fields, then either Edit the value or Confirm it if the OCR read is correct. Once every flagged field is confirmed and the insurance card is attached, Complete Intake becomes available.',
   },
   {
     q: 'Why is a case stuck on "Pharmacist Verification"?',
     a: 'Cases wait for pharmacist verification once PA is approved and copay consent is received. Open the case from Dispensing Hub and use Approve for Dispensing once the financial breakdown has been reviewed.',
   },
   {
-    q: 'How do I request a patient’s pharmacy benefit card?',
-    a: 'From a referral’s AI Extracted Fields panel, use Request Pharmacy Card to send a secure portal / SMS / email request. The case timeline updates automatically once the card is received and matched.',
+    q: 'How do I request a patient’s insurance card?',
+    a: 'From a referral’s AI Extracted Fields panel, use Request Insurance Card to send a secure portal / SMS / email request. The case timeline updates automatically once the card is received and matched.',
   },
   {
     q: 'What do the case progress steps mean?',

@@ -29,7 +29,7 @@ interface Row {
 }
 
 const ROWS: Row[] = [
-  { id: '1', name: 'Sarah Mitchell', refId: 'REF-1984-SM01', therapy: 'SignaFor LXR', source: 'Fax', received: '9m ago', duplicate: '✓ No match', status: 'OCR Review', statusColor: '#b45309', step: 2 },
+  { id: '1', name: 'Sarah Mitchell', refId: 'REF-1984-SM01', therapy: 'Voxzogo (vosoritide)', source: 'Fax', received: '9m ago', duplicate: '✓ No match', status: 'OCR Review', statusColor: '#b45309', step: 2 },
   { id: '2', name: 'Sarah Mitchell', refId: 'REF-2036-1042', therapy: 'SignaFor LXR', source: 'Fax', received: '4m ago', duplicate: '✓ No match', status: 'OCR Review', statusColor: '#b45309', step: 1 },
   { id: '3', name: 'Sarah Mitchell', refId: 'REF-1984-SM01', therapy: 'SignaFor LXR', source: 'Phone', received: '2h ago', duplicate: '✓ No match', status: 'On Hold', statusColor: '#4d4e50', step: 2 },
   { id: '4', name: 'James Ortega', refId: 'REF-1984-JO02', therapy: 'Marbol', source: 'e-Rx', received: '43m ago', duplicate: '✓ No match', status: 'Auto-Created', statusColor: '#0d8a40', step: 4 },

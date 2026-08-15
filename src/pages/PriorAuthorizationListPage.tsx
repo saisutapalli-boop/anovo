@@ -22,17 +22,38 @@ interface Row {
   therapy: string
   payer: string
   copay: string
+  copayTone?: 'neutral' | 'warning'
   paStatus: string
-  paTone: 'neutral' | 'error' | 'success'
+  paTone: 'neutral' | 'warning' | 'error' | 'success'
   finAid: string
+  finAidTone?: 'neutral' | 'error'
   lastAction: string
   step: number
+  actionLabel?: string
+  actionHref?: string
 }
 
 const ROWS: Row[] = [
-  { id: '1', name: 'Sarah Mitchell', refId: 'ARX-1824-3842', therapy: 'Rajerion LXR', payer: 'Aetna PPO', copay: '-$660', paStatus: 'Not Submitted', paTone: 'neutral', finAid: 'Not resolved', lastAction: 'PA In progress', step: 5 },
+  { id: '1', name: 'Sarah Mitchell', refId: 'ARX-1824-3842', therapy: 'Voxzogo (vosoritide)', payer: 'Aetna PPO', copay: '-$660', paStatus: 'Not Submitted', paTone: 'neutral', finAid: 'Not resolved', lastAction: 'PA In progress', step: 5 },
   { id: '2', name: 'Michael Smith', refId: 'ARX-2816-8841', therapy: 'Infusita', payer: 'BlueCross PPO', copay: '$0 (PAP)', paStatus: 'Denied', paTone: 'error', finAid: '✓ Resolved', lastAction: 'Oct 24, 2024', step: 6 },
   { id: '3', name: 'Sonia Patel', refId: 'ARX-1816-0952', therapy: 'Altirel Sprinkle', payer: 'UMC Choice', copay: '$120', paStatus: 'Approved', paTone: 'success', finAid: '✓ Resolved', lastAction: 'Oct 23, 2024', step: 7 },
+  {
+    id: '4',
+    name: 'Sarah Mitchell',
+    refId: 'ANV-2026-10482',
+    therapy: 'Signifor LAR',
+    payer: 'Aetna PPO',
+    copay: '~$680',
+    copayTone: 'warning',
+    paStatus: 'Not Submitted',
+    paTone: 'warning',
+    finAid: 'Not resolved',
+    finAidTone: 'error',
+    lastAction: 'PA in progress',
+    step: 5,
+    actionLabel: 'Work Case',
+    actionHref: '/prior-authorization/4/financial-clearance',
+  },
 ]
 
 const STATUS_OPTIONS = ['All Statuses', 'Not Submitted', 'Denied', 'Approved']
@@ -163,25 +184,36 @@ export default function PriorAuthorizationListPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-[#4d4e50]">{row.payer}</td>
-                    <td className="px-3 py-3 text-[#4d4e50]">{row.copay}</td>
+                    <td className={`px-3 py-3 ${row.copayTone === 'warning' ? 'font-bold text-amber-600' : 'text-[#4d4e50]'}`}>
+                      {row.copay}
+                    </td>
                     <td className="px-3 py-3">
                       {row.paTone === 'neutral' ? (
                         <span className="text-xs font-semibold text-[#666666]">{row.paStatus}</span>
                       ) : (
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                            row.paTone === 'error' ? 'bg-rose-100 text-rose-700' : 'bg-[#11a84e]/10 text-[#0d8a40]'
+                            row.paTone === 'error'
+                              ? 'bg-rose-100 text-rose-700'
+                              : row.paTone === 'warning'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-[#11a84e]/10 text-[#0d8a40]'
                           }`}
                         >
                           {row.paStatus}
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-[#4d4e50]">{row.finAid}</td>
+                    <td className={`px-3 py-3 ${row.finAidTone === 'error' ? 'font-bold text-rose-600' : 'text-[#4d4e50]'}`}>
+                      {row.finAid}
+                    </td>
                     <td className="px-3 py-3 text-[#4d4e50]">{row.lastAction}</td>
                     <td className="px-3 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <TableActionButton onClick={() => navigate(`/prior-authorization/${row.id}`)}>View</TableActionButton>
+                        <TableActionButton onClick={() => navigate(row.actionHref ?? `/prior-authorization/${row.id}`)}>
+                          {row.actionLabel ?? 'View'}
+                          {row.actionLabel && ' →'}
+                        </TableActionButton>
                       </div>
                     </td>
                   </tr>

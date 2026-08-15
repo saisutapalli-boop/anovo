@@ -1,16 +1,15 @@
 import { Fragment, useMemo, useState } from 'react'
-import { ShieldCheck, Send } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import StatusChip from '@/components/ui/StatusChip'
 import DonutLegend from '@/components/ui/DonutLegend'
 import BarLegend from '@/components/ui/BarLegend'
 import CaseTimeline from '@/components/ui/CaseTimeline'
 import Badge, { type BadgeTone } from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
 import SearchInput from '@/components/ui/SearchInput'
 import FilterDropdown from '@/components/ui/FilterDropdown'
-import Toast from '@/components/ui/Toast'
 import TableActionButton from '@/components/ui/TableActionButton'
+import { useDispensingCase } from '@/context/DispensingCaseContext'
 
 const TEAL = '#055979'
 const GREEN = '#11a84e'
@@ -29,40 +28,55 @@ interface Row {
   dispensingStatus: string
   statusTone: BadgeTone
   step: number
-  detail?: 'verification' | 'consent'
 }
 
-const ROWS: Row[] = [
-  { id: '1', patient: 'Sarah Mitchell', therapy: 'Voxzogo (vosoritide)', carrier: 'FedEx Priority', eta: 'Tomorrow 10:30 AM', tempStatus: '2-8°C OK', tempTone: 'success', dispensingStatus: 'Copay Confirmation Pending', statusTone: 'warning', step: 4, detail: 'verification' },
+const BASE_ROWS: Row[] = [
+  { id: '1', patient: 'Sarah Mitchell', therapy: 'Voxzogo (vosoritide)', carrier: 'FedEx Priority', eta: 'Tomorrow 10:30 AM', tempStatus: '2-8°C OK', tempTone: 'success', dispensingStatus: 'Copay Confirmation Pending', statusTone: 'warning', step: 4 },
   { id: '2', patient: 'Marcus Chen', therapy: 'Spinraza (nusinersen)', carrier: 'UPS Medical', eta: 'Today 5:00 PM', tempStatus: 'EXCURSION ALERT', tempTone: 'error', dispensingStatus: 'In Transit', statusTone: 'info', step: 6 },
   { id: '3', patient: 'Elena Rivera', therapy: 'Luxturna (voretigene)', carrier: 'FedEx Priority', eta: 'Tomorrow 2:15 PM', tempStatus: '2-8°C OK', tempTone: 'success', dispensingStatus: 'Delivered', statusTone: 'success', step: 7 },
-  { id: '4', patient: 'Sonia Patel', therapy: 'Alkindi Sprinkle', carrier: 'Pending Carrier', eta: 'Awaiting Consent', tempStatus: 'N/A', tempTone: 'neutral', dispensingStatus: 'Consent Pending', statusTone: 'warning', step: 4, detail: 'consent' },
+  { id: '4', patient: 'Sonia Patel', therapy: 'Alkindi Sprinkle', carrier: 'Pending Carrier', eta: 'Awaiting Consent', tempStatus: 'N/A', tempTone: 'neutral', dispensingStatus: 'Consent Pending', statusTone: 'warning', step: 4 },
 ]
 
-const STATUS_OPTIONS = ['All Statuses', 'Copay Confirmation Pending', 'In Transit', 'Delivered', 'Consent Pending']
+const STATUS_OPTIONS = [
+  'All Statuses',
+  'Copay Confirmation Pending',
+  'Ready for Pharmacist Verification',
+  'Ready to Dispense',
+  'In Transit',
+  'Delivered',
+  'Consent Pending',
+]
 const DATE_OPTIONS = ['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time']
 
 export default function DispensingHubPage() {
+  const navigate = useNavigate()
+  const { copayStatus, verificationStatus } = useDispensingCase()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState(STATUS_OPTIONS[0])
   const [dateRange, setDateRange] = useState(DATE_OPTIONS[1])
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const [consentSent, setConsentSent] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+
+  // Sarah Mitchell's row (id '1') reflects live progress from her case detail page.
+  const rows = useMemo<Row[]>(() => {
+    return BASE_ROWS.map((row) => {
+      if (row.id !== '1') return row
+      if (verificationStatus === 'approved') {
+        return { ...row, dispensingStatus: 'Ready to Dispense', statusTone: 'success', step: 7 }
+      }
+      if (copayStatus === 'received') {
+        return { ...row, dispensingStatus: 'Ready for Pharmacist Verification', statusTone: 'info', step: 5 }
+      }
+      return row
+    })
+  }, [copayStatus, verificationStatus])
 
   const filteredRows = useMemo(() => {
-    return ROWS.filter((row) => {
+    return rows.filter((row) => {
       const matchesStatus = status === 'All Statuses' || row.dispensingStatus === status
       const q = search.trim().toLowerCase()
       const matchesSearch = !q || row.patient.toLowerCase().includes(q) || row.therapy.toLowerCase().includes(q)
       return matchesStatus && matchesSearch
     })
-  }, [search, status])
-
-  function requestConsent() {
-    setConsentSent(true)
-    setToast('Shipment consent request sent to Sonia Patel')
-  }
+  }, [rows, search, status])
 
   return (
     <AppShell active="dispensing">
@@ -156,53 +170,9 @@ export default function DispensingHubPage() {
                       <Badge tone={row.statusTone}>{row.dispensingStatus}</Badge>
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <TableActionButton onClick={() => setExpanded(expanded === row.id ? null : row.id)}>View</TableActionButton>
+                      <TableActionButton onClick={() => navigate(`/dispensing/${row.id}`)}>View</TableActionButton>
                     </td>
                   </tr>
-                  {expanded === row.id && row.detail === 'verification' && (
-                    <tr>
-                      <td colSpan={7} className="px-4 pb-3">
-                        <div className="flex flex-col gap-3 rounded-lg border-l-4 border-[#d97706] bg-[#fffaf3] p-4">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <p className="flex items-center gap-2 text-sm font-bold text-[#383838]">
-                              <ShieldCheck className="size-4 text-[#d97706]" />
-                              Pharmacist Verification · PA Approved
-                            </p>
-                            <Badge tone="warning">RPh Action Required</Badge>
-                          </div>
-                          <div className="grid w-full grid-cols-2 gap-2 wide:grid-cols-4">
-                            {[
-                              { label: 'Approved Amount', value: '$2,760' },
-                              { label: 'Insurance Contribution', value: '$280' },
-                              { label: 'Patient Copay', value: '$2,480' },
-                              { label: 'Copay Consent', value: 'Received' },
-                            ].map((f) => (
-                              <div key={f.label} className="rounded-lg bg-white p-3">
-                                <p className="text-[10px] font-bold uppercase text-[#788a95]">{f.label}</p>
-                                <p className="mt-1 text-sm font-bold text-[#383838]">{f.value}</p>
-                              </div>
-                            ))}
-                          </div>
-                          <Button size="sm" className="self-start" onClick={() => setToast('Sarah Mitchell approved for dispensing')}>
-                            Approve for Dispensing
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {expanded === row.id && row.detail === 'consent' && (
-                    <tr>
-                      <td colSpan={7} className="px-4 pb-3">
-                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-sky-200 bg-sky-50/60 p-4">
-                          <p className="text-sm text-[#4d4e50]">Patient consent for shipment has not yet been confirmed.</p>
-                          <Button size="sm" variant={consentSent ? 'secondary' : 'primary'} onClick={requestConsent} disabled={consentSent}>
-                            <Send className="size-3.5" />
-                            {consentSent ? 'Consent Requested' : 'Get Consent'}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
                   <tr>
                     <td colSpan={7} className="px-4 pb-3">
                       <CaseTimeline currentStep={row.step} defaultExpanded={false} />
@@ -214,8 +184,6 @@ export default function DispensingHubPage() {
           </table>
         </div>
       </div>
-
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </AppShell>
   )
 }

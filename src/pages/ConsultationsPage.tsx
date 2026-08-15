@@ -8,6 +8,7 @@ import FilterDropdown from '@/components/ui/FilterDropdown'
 import SidePanel from '@/components/ui/SidePanel'
 import Toast from '@/components/ui/Toast'
 import TableActionButton from '@/components/ui/TableActionButton'
+import { useToast } from '@/hooks/useToast'
 
 type ConsultStatus = 'Requested' | 'Scheduled' | 'Completed' | 'Declined'
 
@@ -41,7 +42,7 @@ export default function ConsultationsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState(STATUS_OPTIONS[0])
   const [scheduling, setScheduling] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+  const { toast, showToast, clearToast } = useToast()
 
   const [newPatient, setNewPatient] = useState('')
   const [newTopic, setNewTopic] = useState('')
@@ -58,7 +59,7 @@ export default function ConsultationsPage() {
 
   function setConsultStatus(id: string, next: ConsultStatus) {
     setConsults((prev) => prev.map((c) => (c.id === id ? { ...c, status: next } : c)))
-    setToast(`Consultation ${next.toLowerCase()}`)
+    showToast(`Consultation ${next.toLowerCase()}`, next === 'Declined' ? 'warning' : 'success')
   }
 
   function scheduleNew(e: React.FormEvent) {
@@ -72,7 +73,7 @@ export default function ConsultationsPage() {
     setNewPatient('')
     setNewTopic('')
     setNewWith('')
-    setToast('Consultation scheduled')
+    showToast('Consultation scheduled', 'success')
   }
 
   return (
@@ -182,7 +183,7 @@ export default function ConsultationsPage() {
         </SidePanel>
       )}
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }

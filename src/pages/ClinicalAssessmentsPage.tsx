@@ -8,6 +8,7 @@ import FilterDropdown from '@/components/ui/FilterDropdown'
 import SidePanel from '@/components/ui/SidePanel'
 import Toast from '@/components/ui/Toast'
 import TableActionButton from '@/components/ui/TableActionButton'
+import { useToast } from '@/hooks/useToast'
 
 type AssessmentStatus = 'Not Started' | 'In Progress' | 'Pending Review' | 'Completed'
 
@@ -42,7 +43,7 @@ export default function ClinicalAssessmentsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState(STATUS_OPTIONS[0])
   const [creating, setCreating] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+  const { toast, showToast, clearToast } = useToast()
 
   const [newPatient, setNewPatient] = useState('')
   const [newType, setNewType] = useState('')
@@ -79,7 +80,7 @@ export default function ClinicalAssessmentsPage() {
     setNewPatient('')
     setNewType('')
     setNewDue('')
-    setToast('Clinical assessment created')
+    showToast('Clinical assessment created', 'success')
   }
 
   return (
@@ -187,7 +188,7 @@ export default function ClinicalAssessmentsPage() {
         </SidePanel>
       )}
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }

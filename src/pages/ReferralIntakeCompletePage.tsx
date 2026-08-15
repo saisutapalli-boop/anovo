@@ -10,7 +10,7 @@ const CHECKLIST = [
   'Drug NDC validated via Medispan matching catalog',
   'Drug dosage strength confirmed · 0.24mg/kg IM injection daily',
   'REMS and cold-chain tags validated & applied to shipment profile',
-  'Pharmacy benefit card scanned copy matched to patient eligibility record',
+  'Insurance card scanned copy matched to patient eligibility record',
 ]
 
 export default function ReferralIntakeCompletePage() {
@@ -29,7 +29,7 @@ export default function ReferralIntakeCompletePage() {
               prior-authorization rules.
             </p>
           </div>
-          <Button onClick={() => navigate('/dashboard')}>Send to BI Queue &rarr;</Button>
+          <Button onClick={() => navigate('/prior-authorization')}>Send to BI Queue &rarr;</Button>
         </div>
 
         {/* Success banner */}

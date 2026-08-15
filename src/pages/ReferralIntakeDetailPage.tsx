@@ -82,13 +82,7 @@ export default function ReferralIntakeDetailPage() {
 
           {/* Right: AI Extracted Fields, the only panel that scrolls */}
           <div className="flex w-full flex-1 flex-col overflow-y-auto rounded-xl border border-[#e5e5e5] bg-white wide:min-h-0">
-            <div className="w-full px-4 py-4">
-              <p className="text-2xl tracking-[-0.12px] text-[#383838]">AI Extracted Fields</p>
-              <p className="text-sm text-[#788a95]">Auto-populated from OCR · Review and confirm each field</p>
-            </div>
-            <div className="h-2 w-full bg-[#f5f5f5]" />
-
-            {/* Pharmacy card status banner */}
+            {/* Insurance card status banner */}
             <div className="w-full border-b border-[#f0f0f0] px-4 py-4">
               {cardStep !== 'received' && (
                 <div className="flex flex-col gap-3">
@@ -102,13 +96,13 @@ export default function ReferralIntakeDetailPage() {
                     </span>
                   </div>
                   <p className="text-sm text-[#666666]">
-                    Pharmacy benefit card copy is missing. Patient must provide active pharmacy benefit card to
-                    complete hub enrollment and process drug access. Document must accompany referral.
+                    Insurance card copy is missing. Patient must provide an active insurance card to complete hub
+                    enrollment and process drug access. Document must accompany referral.
                   </p>
                   {cardStep === 'missing' && (
                     <div className="flex gap-2">
                       <Button size="sm" onClick={() => setRequestingCard(true)}>
-                        Request Pharmacy Card &rarr;
+                        Request Insurance Card &rarr;
                       </Button>
                       <Button size="sm" variant="secondary">
                         Upload Manually
@@ -121,7 +115,7 @@ export default function ReferralIntakeDetailPage() {
                         <Send className="mt-0.5 size-4 shrink-0 text-blue-600" />
                         <div>
                           <p className="text-sm font-semibold text-[#383838]">Request sent to Sarah Mitchell</p>
-                          <p className="text-xs text-[#666666]">Secure portal request sent for pharmacy benefit card.</p>
+                          <p className="text-xs text-[#666666]">Secure portal request sent for insurance card.</p>
                         </div>
                       </div>
                       <Button size="sm" onClick={() => setCardStep('received')}>
@@ -142,6 +136,12 @@ export default function ReferralIntakeDetailPage() {
                   </p>
                 </div>
               )}
+            </div>
+            <div className="h-2 w-full bg-[#f5f5f5]" />
+
+            <div className="w-full px-4 py-4">
+              <p className="text-2xl tracking-[-0.12px] text-[#383838]">AI Extracted Fields</p>
+              <p className="text-sm text-[#788a95]">Auto-populated from OCR · Review and confirm each field</p>
             </div>
             <div className="h-2 w-full bg-[#f5f5f5]" />
 
@@ -185,7 +185,7 @@ export default function ReferralIntakeDetailPage() {
             <div className="flex w-full items-center justify-between gap-4 border-t border-[#f0f0f0] p-4">
               <p className="flex items-center gap-2 text-xs text-[#666666]">
                 <FileText className="size-3.5" />
-                {allConfirmed ? 'All fields confirmed. Ready to complete intake.' : 'Confirm flagged fields and attach the pharmacy card to complete intake.'}
+                {allConfirmed ? 'All fields confirmed. Ready to complete intake.' : 'Confirm flagged fields and attach the insurance card to complete intake.'}
               </p>
               <Button disabled={!allConfirmed} onClick={() => navigate(`/referral-intake/${caseId}/complete`)}>
                 Complete Intake &rarr;

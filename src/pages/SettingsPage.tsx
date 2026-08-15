@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import Toggle from '@/components/ui/Toggle'
 import FilterDropdown from '@/components/ui/FilterDropdown'
 import Toast from '@/components/ui/Toast'
+import { useToast } from '@/hooks/useToast'
 
 const HUB_SITES = ['All Regional Hub Sites', 'Nashville, TN', 'Austin, TX', 'Columbus, OH', 'Sacramento, CA']
 
@@ -45,15 +46,15 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
-  const [toast, setToast] = useState<string | null>(null)
+  const { toast, showToast, clearToast } = useToast()
 
   function saveProfile(e: React.FormEvent) {
     e.preventDefault()
-    setToast('Profile settings saved')
+    showToast('Profile settings saved', 'success')
   }
 
   function saveNotifications() {
-    setToast('Notification preferences updated')
+    showToast('Notification preferences updated', 'neutral')
   }
 
   function changePassword(e: React.FormEvent) {
@@ -70,7 +71,7 @@ export default function SettingsPage() {
     setCurrentPassword('')
     setNewPassword('')
     setConfirmPassword('')
-    setToast('Password updated successfully')
+    showToast('Password updated successfully', 'success')
   }
 
   return (
@@ -198,7 +199,7 @@ export default function SettingsPage() {
                 checked={twoFactor}
                 onChange={(v) => {
                   setTwoFactor(v)
-                  setToast(v ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled')
+                  showToast(v ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled', v ? 'success' : 'warning')
                 }}
                 label="Two-Factor Authentication"
                 description="Require a verification code at sign in"
@@ -212,7 +213,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }
