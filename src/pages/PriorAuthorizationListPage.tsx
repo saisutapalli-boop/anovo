@@ -3,7 +3,7 @@ import { HelpCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import StatusChip from '@/components/ui/StatusChip'
-import Donut from '@/components/ui/Donut'
+import DonutLegend from '@/components/ui/DonutLegend'
 import ProgressBar from '@/components/ui/ProgressBar'
 import CaseTimeline from '@/components/ui/CaseTimeline'
 import SearchInput from '@/components/ui/SearchInput'
@@ -64,34 +64,16 @@ export default function PriorAuthorizationListPage() {
               <p className="text-2xl tracking-[-0.12px] text-[#383838]">Overview</p>
               <StatusChip>Benefit Investigation / Prior Authorization</StatusChip>
             </div>
-            <div className="flex items-center gap-4">
-              <Donut
-                size={110}
-                thickness={18}
-                centerValue="40"
-                centerLabel="Total Cases"
-                segments={[
-                  { value: 18, color: TEAL },
-                  { value: 11, color: GREEN },
-                  { value: 3, color: '#e9322d' },
-                  { value: 8, color: BLUE },
-                ]}
-              />
-              <div className="flex flex-1 flex-col gap-2">
-                {[
-                  { color: TEAL, label: 'In My Queue', value: '18' },
-                  { color: GREEN, label: 'PA Pending', value: '11' },
-                  { color: '#e9322d', label: 'PA Denied', value: '3' },
-                  { color: BLUE, label: 'Cleared Today', value: '8' },
-                ].map((l) => (
-                  <div key={l.label} className="flex w-full items-center gap-2">
-                    <span className="size-2.5 shrink-0 rounded-full" style={{ background: l.color }} />
-                    <span className="flex-1 text-sm text-[#4d4e50]">{l.label}</span>
-                    <span className="text-sm text-[#383838]">{l.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <DonutLegend
+              centerValue="40"
+              centerLabel="Total Cases"
+              items={[
+                { value: 18, color: TEAL, label: 'In My Queue' },
+                { value: 11, color: GREEN, label: 'PA Pending' },
+                { value: 3, color: '#e9322d', label: 'PA Denied' },
+                { value: 8, color: BLUE, label: 'Cleared Today' },
+              ]}
+            />
           </div>
 
           <div className="flex flex-1 flex-col gap-3 rounded-xl border border-[#dddddd] bg-white p-6">
