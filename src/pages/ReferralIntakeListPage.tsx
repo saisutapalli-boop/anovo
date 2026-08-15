@@ -2,9 +2,9 @@ import { Fragment, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import StatusChip from '@/components/ui/StatusChip'
-import Donut from '@/components/ui/Donut'
+import DonutLegend from '@/components/ui/DonutLegend'
 import CaseTimeline from '@/components/ui/CaseTimeline'
-import AnimatedBar from '@/components/ui/AnimatedBar'
+import BarLegend from '@/components/ui/BarLegend'
 import SearchInput from '@/components/ui/SearchInput'
 import FilterDropdown from '@/components/ui/FilterDropdown'
 import TableActionButton from '@/components/ui/TableActionButton'
@@ -65,34 +65,16 @@ export default function ReferralIntakeListPage() {
               <p className="text-2xl tracking-[-0.12px] text-[#383838]">Overview</p>
               <StatusChip>Referral Intake</StatusChip>
             </div>
-            <div className="flex items-center gap-5">
-              <Donut
-                size={110}
-                thickness={18}
-                centerValue="72"
-                centerLabel="Total Cases"
-                segments={[
-                  { value: 47, color: TEAL },
-                  { value: 12, color: GREEN },
-                  { value: 4, color: ORANGE },
-                  { value: 9, color: '#129fea' },
-                ]}
-              />
-              <div className="flex flex-1 flex-col gap-2">
-                {[
-                  { color: TEAL, label: "Today's Inbound", value: '47' },
-                  { color: GREEN, label: 'Pending Review', value: '12' },
-                  { color: ORANGE, label: 'Duplicates Blocked', value: '4' },
-                  { color: '#129fea', label: 'Ready for BI', value: '9' },
-                ].map((l) => (
-                  <div key={l.label} className="flex w-full items-center gap-2">
-                    <span className="size-3 shrink-0 rounded-full" style={{ background: l.color }} />
-                    <span className="flex-1 text-sm text-[#4d4e50]">{l.label}</span>
-                    <span className="text-sm text-[#383838]">{l.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <DonutLegend
+              centerValue="72"
+              centerLabel="Total Cases"
+              items={[
+                { value: 47, color: TEAL, label: "Today's Inbound" },
+                { value: 12, color: GREEN, label: 'Pending Review' },
+                { value: 4, color: ORANGE, label: 'Duplicates Blocked' },
+                { value: 9, color: '#129fea', label: 'Ready for BI' },
+              ]}
+            />
           </div>
 
           <div className="flex flex-1 flex-col gap-3 rounded-xl border border-[#dddddd] bg-white p-6">
@@ -100,35 +82,17 @@ export default function ReferralIntakeListPage() {
               <p className="text-2xl tracking-[-0.12px] text-[#383838]">Queue Health & Next Actions</p>
               <StatusChip>Live</StatusChip>
             </div>
-            <div className="flex items-center gap-5">
-              <div className="flex h-[150px] flex-1 items-end justify-center gap-4">
-                {[
-                  { v: 11, color: TEAL },
-                  { v: 3, color: RED },
-                  { v: 2, color: ORANGE },
-                  { v: 9, color: GREEN },
-                ].map((b, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1.5">
-                    <span className="text-xs text-[#383838]">{b.v}</span>
-                    <AnimatedBar size={b.v * 10} color={b.color} delay={i * 80} className="w-[50px] rounded-t-md" />
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-1 flex-col gap-2">
-                {[
-                  { color: TEAL, label: 'Avg. Resolution', value: '11' },
-                  { color: RED, label: 'Waiting on Input', value: '3' },
-                  { color: ORANGE, label: 'SLA at Risk', value: '2' },
-                  { color: GREEN, label: 'Ready for BI', value: '9' },
-                ].map((l) => (
-                  <div key={l.label} className="flex w-full items-center gap-2">
-                    <span className="size-3 shrink-0 rounded-full" style={{ background: l.color }} />
-                    <span className="flex-1 text-sm text-[#4d4e50]">{l.label}</span>
-                    <span className="text-sm text-[#383838]">{l.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <BarLegend
+              containerClassName="flex h-[150px] flex-1 items-end justify-center gap-4"
+              barClassName="w-[50px] rounded-t-md"
+              showValues
+              bars={[
+                { size: 110, color: TEAL, label: 'Avg. Resolution', value: '11' },
+                { size: 30, color: RED, label: 'Waiting on Input', value: '3' },
+                { size: 20, color: ORANGE, label: 'SLA at Risk', value: '2' },
+                { size: 90, color: GREEN, label: 'Ready for BI', value: '9' },
+              ]}
+            />
           </div>
         </div>
 
