@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Primary responsive breakpoint: below this, layouts stack vertically and
+     navigation collapses into the hamburger menu. */
+  --breakpoint-wide: 1080px;
+
+  /* Brand */
+  --color-brand-teal: #005973;
+  --color-brand-teal-dark: #012e3f;
+  --color-brand-teal-hover: #07645c;
+  --color-brand-green: #00a859;
+  --color-brand-green-dark: #008f4c;
+
+  /* Text */
+  --color-text-primary: #1d2d35;
+  --color-text-secondary: #4d4e50;
+  --color-text-muted: #666666;
+  --color-text-dim: #788a95;
+
+  /* Surfaces */
+  --color-surface-card: #ffffff;
+  --color-surface-elevated: #fefefe;
+  --color-bg-tertiary: #f5f5f5;
+  --color-bg-muted: #eaeded;
+
+  /* Borders */
+  --color-border-default: #e2e8f0;
+  --color-border-subtle: #e5e5e5;
+  --color-border-strong: #cad2d3;
+
+  /* Status */
+  --color-status-error: #e9322d;
+  --color-status-warning: #e67e22;
+  --color-status-info: #129fea;
+  --color-status-success: #11a84e;
+}
+
+:root {
+  --bg-gradient: linear-gradient(180deg, #f0f4f3 0%, #f7faf9 100%);
+}
+
+body {
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--color-text-primary);
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border-default);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 89, 115, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
