@@ -50,7 +50,7 @@ const DATE_OPTIONS = ['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time']
 
 export default function DispensingHubPage() {
   const navigate = useNavigate()
-  const { copayStatus, verificationStatus } = useDispensingCase()
+  const { copayStatus, verificationStatus, paSimulationComplete } = useDispensingCase()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState(STATUS_OPTIONS[0])
   const [dateRange, setDateRange] = useState(DATE_OPTIONS[1])
@@ -63,11 +63,16 @@ export default function DispensingHubPage() {
         return { ...row, dispensingStatus: 'Ready to Dispense', statusTone: 'success', step: 7 }
       }
       if (copayStatus === 'received') {
-        return { ...row, dispensingStatus: 'Ready for Pharmacist Verification', statusTone: 'info', step: 5 }
+        return { ...row, dispensingStatus: 'Ready for Pharmacist Verification', statusTone: 'info', step: 7 }
+      }
+      // BI & PA are already cleared once the PA simulation completes; Dispense
+      // (which covers copay + pharmacist verification) becomes the active step.
+      if (paSimulationComplete) {
+        return { ...row, step: 7 }
       }
       return row
     })
-  }, [copayStatus, verificationStatus])
+  }, [copayStatus, verificationStatus, paSimulationComplete])
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {

@@ -5,7 +5,9 @@ import Breadcrumb from '@/components/layout/Breadcrumb'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import ProgressBar from '@/components/ui/ProgressBar'
+import Toast from '@/components/ui/Toast'
 import CaseActivityTimeline from '@/components/ui/CaseActivityTimeline'
+import { useToast } from '@/hooks/useToast'
 import { useDispensingCase } from '@/context/DispensingCaseContext'
 import { CASE_REF, HISTORICAL_EVENTS, SIMULATED_EVENTS } from '@/data/sarahMitchellTimeline'
 
@@ -39,6 +41,7 @@ function StepBadge({ done }: { done: boolean }) {
 
 export default function DispensingCaseDetailPage() {
   const { copayStatus, setCopayStatus, verificationStatus, setVerificationStatus, paSimulationComplete } = useDispensingCase()
+  const { toast, showToast, clearToast } = useToast()
   const [activity, setActivity] = useState<ActivityEntry[]>([
     { text: 'Sarah Mitchell case opened. Steps 1-3 automatically AI validated.', time: nowLabel(), tone: 'done' },
     { text: 'Step 4 ready: Copay confirmation - send message for patient consent.', time: nowLabel(), tone: 'active' },
@@ -56,6 +59,7 @@ export default function DispensingCaseDetailPage() {
   function simulateConsentReceived() {
     setCopayStatus('received')
     log('Copay consent received from Sarah Mitchell. Step 5 ready: Pharmacist Verification.', 'active')
+    showToast('Moved case to RPh Verification Queue', 'success')
   }
 
   function approveVerification() {
@@ -318,6 +322,8 @@ export default function DispensingCaseDetailPage() {
           </div>
         </div>
       </div>
+
+      {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
     </AppShell>
   )
 }
