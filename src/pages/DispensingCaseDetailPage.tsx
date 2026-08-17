@@ -1,15 +1,13 @@
 import { useState } from 'react'
-import { Check, Send, ShieldCheck } from 'lucide-react'
+import { Check, Send } from 'lucide-react'
 import AppShell from '@/components/layout/AppShell'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import ProgressBar from '@/components/ui/ProgressBar'
 import Toast from '@/components/ui/Toast'
-import CaseActivityTimeline from '@/components/ui/CaseActivityTimeline'
 import { useToast } from '@/hooks/useToast'
 import { useDispensingCase } from '@/context/DispensingCaseContext'
-import { CASE_REF, HISTORICAL_EVENTS, SIMULATED_EVENTS } from '@/data/sarahMitchellTimeline'
 
 interface ActivityEntry {
   text: string
@@ -40,7 +38,7 @@ function StepBadge({ done }: { done: boolean }) {
 }
 
 export default function DispensingCaseDetailPage() {
-  const { copayStatus, setCopayStatus, verificationStatus, setVerificationStatus, paSimulationComplete } = useDispensingCase()
+  const { copayStatus, setCopayStatus } = useDispensingCase()
   const { toast, showToast, clearToast } = useToast()
   const [activity, setActivity] = useState<ActivityEntry[]>([
     { text: 'Sarah Mitchell case opened. Steps 1-3 automatically AI validated.', time: nowLabel(), tone: 'done' },
@@ -53,21 +51,18 @@ export default function DispensingCaseDetailPage() {
 
   function requestCopayConsent() {
     setCopayStatus('requested')
-    log('Copay consent request sent to Sarah Mitchell.', 'active')
+    log('Copay consent request sent to Sarah Mitchell with therapy and copay details.', 'active')
   }
 
   function simulateConsentReceived() {
     setCopayStatus('received')
-    log('Copay consent received from Sarah Mitchell. Step 5 ready: Pharmacist Verification.', 'active')
+    log('Patient consent received for the Voxzogo (vosoritide) copay pathway.', 'active')
+    log('Consent confirmed. Preparing Pharmacist Verification view...', 'active')
+    log('Case moved to Pharmacist Verification stage.')
     showToast('Moved case to RPh Verification Queue', 'success')
   }
 
-  function approveVerification() {
-    setVerificationStatus('approved')
-    log('Pharmacist verification approved. Case ready for dispensing.')
-  }
-
-  const readiness = 3 + (copayStatus === 'received' ? 1 : 0) + (verificationStatus === 'approved' ? 1 : 0)
+  const readiness = 3 + (copayStatus === 'received' ? 1 : 0)
 
   return (
     <AppShell active="dispensing" showNav={false}>
@@ -78,20 +73,6 @@ export default function DispensingCaseDetailPage() {
             { label: 'Sarah Mitchell' },
           ]}
           title="Sarah Mitchell · Voxzogo (vosoritide)"
-        />
-
-        {/* Same case record carried over from Prior Authorization */}
-        <CaseActivityTimeline
-          title="Sarah Mitchell · Case Timeline"
-          subtitle={`${CASE_REF} · End-to-end PA activity`}
-          events={paSimulationComplete ? [...HISTORICAL_EVENTS, ...SIMULATED_EVENTS] : HISTORICAL_EVENTS}
-          dividerLabel={paSimulationComplete ? 'Today · Simulation Complete' : undefined}
-          dividerIndex={paSimulationComplete ? HISTORICAL_EVENTS.length : undefined}
-          badge={
-            <Badge tone={paSimulationComplete ? 'success' : 'neutral'}>
-              {paSimulationComplete ? 'PA complete · in Dispensing Queue' : 'Awaiting PA simulation'}
-            </Badge>
-          }
         />
 
         {/* AI Readiness Verification */}
@@ -198,58 +179,13 @@ export default function DispensingCaseDetailPage() {
                 </div>
               )}
             </div>
-
-            {/* Step 5: Pharmacist verification */}
-            {copayStatus === 'received' && (
-              <div
-                className={`flex flex-col gap-3 rounded-lg border p-4 ${
-                  verificationStatus === 'approved' ? 'border-[#11a84e]/25 bg-[#11a84e]/5' : 'border-[#e5e5e5] bg-white'
-                }`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <StepBadge done={verificationStatus === 'approved'} />
-                    <div>
-                      <p className="text-sm font-bold text-[#383838]">Pharmacist verification</p>
-                      <p className="text-xs text-[#666666]">
-                        {verificationStatus === 'approved' ? 'Approved for dispensing' : 'Review PA approval and copay consent'}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge tone={verificationStatus === 'approved' ? 'success' : 'neutral'}>
-                    {verificationStatus === 'approved' ? 'AI Validated' : 'Action Needed'}
-                  </Badge>
-                </div>
-                {verificationStatus === 'pending' && (
-                  <>
-                    <div className="grid w-full grid-cols-2 gap-2 wide:grid-cols-4">
-                      {[
-                        { label: 'Approved Amount', value: '$2,760' },
-                        { label: 'Insurance Contribution', value: '$280' },
-                        { label: 'Patient Copay', value: '$2,480' },
-                        { label: 'Copay Consent', value: 'Received' },
-                      ].map((f) => (
-                        <div key={f.label} className="rounded-lg bg-[#f5f5f5] p-3">
-                          <p className="text-[10px] font-bold uppercase text-[#788a95]">{f.label}</p>
-                          <p className="mt-1 text-sm font-bold text-[#383838]">{f.value}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <Button onClick={approveVerification} className="self-start">
-                      <ShieldCheck className="size-3.5" />
-                      Approve for Dispensing
-                    </Button>
-                  </>
-                )}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Activity Timeline */}
+        {/* Case Activity */}
         <div className="flex w-full flex-col gap-3 rounded-xl border border-[#dddddd] bg-white p-6">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-brand-teal">Activity Timeline</p>
+            <p className="text-base font-bold text-brand-teal">Case Activity</p>
             <span className="text-xs text-[#788a95]">Live simulation</span>
           </div>
           <div className="flex flex-col gap-3">
@@ -271,13 +207,13 @@ export default function DispensingCaseDetailPage() {
             <p className="text-[11px] font-bold uppercase tracking-wide text-[#788a95]">Readiness</p>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-brand-teal">{readiness}</span>
-              <span className="text-2xl font-bold text-[#cad2d3]">/5</span>
+              <span className="text-2xl font-bold text-[#cad2d3]">/4</span>
             </div>
-            <ProgressBar value={readiness} max={5} color="#11a84e" trackColor="#eaeded" height={8} />
+            <ProgressBar value={readiness} max={4} color="#11a84e" trackColor="#eaeded" height={8} />
             <p className="text-xs text-[#666666]">
-              {readiness < 4 && 'Steps 1-3 are automatically AI validated. Step 4 is ready for copay consent.'}
-              {readiness === 4 && 'Copay consent received. Step 5 is ready for pharmacist verification.'}
-              {readiness === 5 && 'All readiness gates complete. Case is ready to dispense.'}
+              {readiness < 4
+                ? 'Steps 1-3 are automatically AI validated. Step 4 is ready for copay consent.'
+                : 'Copay consent received. Case moved to Pharmacist Verification stage.'}
             </p>
           </div>
 
@@ -311,11 +247,7 @@ export default function DispensingCaseDetailPage() {
               <div className="flex justify-between">
                 <span className="text-[#788a95]">Next step</span>
                 <span className="font-bold text-[#383838]">
-                  {verificationStatus === 'approved'
-                    ? 'Ready to Dispense'
-                    : copayStatus === 'received'
-                      ? 'Pharmacist Verification'
-                      : 'Copay Confirmation'}
+                  {copayStatus === 'received' ? 'Pharmacist Verification' : 'Copay Confirmation'}
                 </span>
               </div>
             </div>

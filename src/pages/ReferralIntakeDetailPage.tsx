@@ -5,7 +5,7 @@ import AppShell from '@/components/layout/AppShell'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 import Button from '@/components/ui/Button'
 import FieldRow from '@/components/referral/FieldRow'
-import EditDrugStrengthModal from '@/components/referral/EditDrugStrengthModal'
+import EditFieldModal from '@/components/referral/EditFieldModal'
 import RequestInsuranceCardModal from '@/components/referral/RequestInsuranceCardModal'
 
 type CardStep = 'missing' | 'requested' | 'received'
@@ -26,9 +26,12 @@ export default function ReferralIntakeDetailPage() {
   const [doseConfirmed, setDoseConfirmed] = useState(false)
   const [doseValue, setDoseValue] = useState('40 mg/vial')
   const [editingDose, setEditingDose] = useState(false)
+  const [deaConfirmed, setDeaConfirmed] = useState(false)
+  const [deaValue, setDeaValue] = useState('BC1234563')
+  const [editingDea, setEditingDea] = useState(false)
   const [requestingCard, setRequestingCard] = useState(false)
 
-  const allConfirmed = doseConfirmed && cardStep === 'received'
+  const allConfirmed = doseConfirmed && deaConfirmed && cardStep === 'received'
 
   return (
     <AppShell active="referral-intake" showNav={false}>
@@ -82,6 +85,52 @@ export default function ReferralIntakeDetailPage() {
 
           {/* Right: AI Extracted Fields, the only panel that scrolls */}
           <div className="flex w-full flex-1 flex-col overflow-y-auto rounded-xl border border-[#e5e5e5] bg-white wide:min-h-0">
+            <div className="w-full px-4 py-4">
+              <p className="text-2xl tracking-[-0.12px] text-[#383838]">AI Extracted Fields</p>
+              <p className="text-sm text-[#788a95]">Auto-populated from OCR · Review and confirm each field</p>
+            </div>
+            <div className="h-2 w-full bg-[#f5f5f5]" />
+
+            <SectionHeader title="Patient Demographics" />
+            <FieldRow label="Full Name" value="Sarah Mitchell" confidence="98%" />
+            <FieldRow label="Date of Birth" value="03/15/1989" confidence="97%" />
+            <FieldRow label="Phone" value="(615) 555-0134" confidence="95%" />
+            <div className="h-2 w-full bg-[#f5f5f5]" />
+
+            <SectionHeader title="Prescriber Information" />
+            <FieldRow label="Physician Name" value="Dr. James Carter" confidence="NPPES Active · 99%" />
+            <FieldRow label="Prescriber NPI" value="1234567890" confidence="NPPES Active" />
+            <FieldRow
+              label="DEA Number"
+              value={deaValue}
+              tone={deaConfirmed ? 'verified' : 'flagged'}
+              confidence={deaConfirmed ? '✓ Confirmed' : undefined}
+              tagLabel="Flagged · 61%"
+              note={deaConfirmed ? undefined : 'NPI lookup verification failed - confirm manually'}
+              onEdit={deaConfirmed ? undefined : () => setEditingDea(true)}
+              onConfirm={deaConfirmed ? undefined : () => setDeaConfirmed(true)}
+            />
+            <div className="h-2 w-full bg-[#f5f5f5]" />
+
+            <SectionHeader title="Prescription Details" />
+            <FieldRow label="Drug Name" value="Voxzogo (vosoritide)" confidence="96%" />
+            <FieldRow label="NDC" value="00078-0654-61" confidence="Medispan Match" />
+            <FieldRow label="Dosage / SIG" value="0.24 mg/kg · Daily" confidence="91%" />
+            <FieldRow label="Route / Days Supply" value="IM Injection · 28 days · Qty: 1 kit" confidence="93%" />
+            <FieldRow label="Cold-Chain Flag" value="2°C-8°C · Overnight required" confidence="Flagged" />
+            <FieldRow label="Diagnosis Code" value="Achondroplasia (ICD-10: Q77.4)" confidence="93%" />
+            <FieldRow
+              label="Drug Strength - Confirm"
+              value={doseValue}
+              tone={doseConfirmed ? 'verified' : 'flagged'}
+              confidence={doseConfirmed ? '✓ Confirmed' : undefined}
+              tagLabel="Action Needed · 72%"
+              note={doseConfirmed ? undefined : "OCR read '40' - verify against Rx; available strengths 10 mg / 20 mg / 40 mg / 60 mg"}
+              onEdit={doseConfirmed ? undefined : () => setEditingDose(true)}
+              onConfirm={doseConfirmed ? undefined : () => setDoseConfirmed(true)}
+            />
+            <div className="h-2 w-full bg-[#f5f5f5]" />
+
             {/* Insurance card status banner */}
             <div className="w-full border-b border-[#f0f0f0] px-4 py-4">
               {cardStep !== 'received' && (
@@ -137,50 +186,6 @@ export default function ReferralIntakeDetailPage() {
                 </div>
               )}
             </div>
-            <div className="h-2 w-full bg-[#f5f5f5]" />
-
-            <div className="w-full px-4 py-4">
-              <p className="text-2xl tracking-[-0.12px] text-[#383838]">AI Extracted Fields</p>
-              <p className="text-sm text-[#788a95]">Auto-populated from OCR · Review and confirm each field</p>
-            </div>
-            <div className="h-2 w-full bg-[#f5f5f5]" />
-
-            <SectionHeader title="Patient Demographics" />
-            <FieldRow label="Full Name" value="Sarah Mitchell" confidence="98%" />
-            <FieldRow label="Date of Birth" value="03/15/1989" confidence="97%" />
-            <FieldRow label="Phone" value="(615) 555-0134" confidence="95%" />
-            <div className="h-2 w-full bg-[#f5f5f5]" />
-
-            <SectionHeader title="Prescriber Information" />
-            <FieldRow label="Physician Name" value="Dr. James Carter" confidence="NPPES Active · 99%" />
-            <FieldRow label="Prescriber NPI" value="1234567890" confidence="NPPES Active" />
-            <FieldRow
-              label="DEA Number"
-              value="BC1234563"
-              tone="flagged"
-              tagLabel="Flagged · 61%"
-              note="NPI lookup verification failed - confirm manually"
-            />
-            <div className="h-2 w-full bg-[#f5f5f5]" />
-
-            <SectionHeader title="Prescription Details" />
-            <FieldRow label="Drug Name" value="Voxzogo (vosoritide)" confidence="96%" />
-            <FieldRow label="NDC" value="00078-0654-61" confidence="Medispan Match" />
-            <FieldRow label="Dosage / SIG" value="0.24 mg/kg · Daily" confidence="91%" />
-            <FieldRow label="Route / Days Supply" value="IM Injection · 28 days · Qty: 1 kit" confidence="93%" />
-            <FieldRow label="REMS Program" value="Signifor REMS - Enrollment required" tone="flagged" tagLabel="Action needed" />
-            <FieldRow label="Cold-Chain Flag" value="2°C-8°C · Overnight required" confidence="Flagged" />
-            <FieldRow label="Diagnosis Code" value="Achondroplasia (ICD-10: Q77.4)" confidence="93%" />
-            <FieldRow
-              label="Drug Strength - Confirm"
-              value={doseValue}
-              tone={doseConfirmed ? 'verified' : 'flagged'}
-              confidence={doseConfirmed ? '✓ Confirmed' : undefined}
-              tagLabel="Action Needed · 72%"
-              note={doseConfirmed ? undefined : "OCR read '40' - verify against Rx; available strengths 10 mg / 20 mg / 40 mg / 60 mg"}
-              onEdit={doseConfirmed ? undefined : () => setEditingDose(true)}
-              onConfirm={doseConfirmed ? undefined : () => setDoseConfirmed(true)}
-            />
 
             <div className="flex w-full items-center justify-between gap-4 border-t border-[#f0f0f0] p-4">
               <p className="flex items-center gap-2 text-xs text-[#666666]">
@@ -196,13 +201,30 @@ export default function ReferralIntakeDetailPage() {
       </div>
 
       {editingDose && (
-        <EditDrugStrengthModal
+        <EditFieldModal
+          title="Edit Drug Strength"
+          fieldLabel="Drug Strength"
+          description="Update the extracted strength. Use the value shown on the referral / Rx."
           initialValue={doseValue}
           onClose={() => setEditingDose(false)}
           onSave={(v) => {
             setDoseValue(v)
             setDoseConfirmed(false)
             setEditingDose(false)
+          }}
+        />
+      )}
+      {editingDea && (
+        <EditFieldModal
+          title="Edit DEA Number"
+          fieldLabel="DEA Number"
+          description="Update the extracted DEA number. Use the value shown on the referral / Rx."
+          initialValue={deaValue}
+          onClose={() => setEditingDea(false)}
+          onSave={(v) => {
+            setDeaValue(v)
+            setDeaConfirmed(false)
+            setEditingDea(false)
           }}
         />
       )}

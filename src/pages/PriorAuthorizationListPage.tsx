@@ -156,7 +156,6 @@ export default function PriorAuthorizationListPage() {
                 <th className="px-6 py-3">Patient</th>
                 <th className="px-3 py-3">Therapy</th>
                 <th className="px-3 py-3">Payer</th>
-                <th className="px-3 py-3">Est. Copay</th>
                 <th className="px-3 py-3">PA Status</th>
                 <th className="px-3 py-3">Fin. Aid</th>
                 <th className="px-3 py-3">Last Action</th>
@@ -166,7 +165,7 @@ export default function PriorAuthorizationListPage() {
             <tbody>
               {filteredRows.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-sm text-[#788a95]">
+                  <td colSpan={7} className="px-6 py-10 text-center text-sm text-[#788a95]">
                     No prior authorization cases match your search or filters.
                   </td>
                 </tr>
@@ -184,9 +183,6 @@ export default function PriorAuthorizationListPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-[#4d4e50]">{row.payer}</td>
-                    <td className={`px-3 py-3 ${row.copayTone === 'warning' ? 'font-bold text-amber-600' : 'text-[#4d4e50]'}`}>
-                      {row.copay}
-                    </td>
                     <td className="px-3 py-3">
                       {row.paTone === 'neutral' ? (
                         <span className="text-xs font-semibold text-[#666666]">{row.paStatus}</span>
@@ -218,7 +214,7 @@ export default function PriorAuthorizationListPage() {
                     </td>
                   </tr>
                   <tr>
-                    <td colSpan={8} className="px-4 pb-3">
+                    <td colSpan={7} className="px-4 pb-3">
                       <CaseTimeline currentStep={row.step} defaultExpanded={false} />
                     </td>
                   </tr>

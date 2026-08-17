@@ -8,7 +8,7 @@ const CHECKLIST = [
   'Patient demographics verified · no duplicate MPI record detected',
   'Prescriber NPI active (NPPES) · state DEA registration confirmed active',
   'Drug NDC validated via Medispan matching catalog',
-  'Drug dosage strength confirmed · 0.24mg/kg IM injection daily',
+  'Drug dosage strength confirmed',
   'REMS and cold-chain tags validated & applied to shipment profile',
   'Insurance card scanned copy matched to patient eligibility record',
 ]
@@ -35,7 +35,7 @@ export default function ReferralIntakeCompletePage() {
         {/* Success banner */}
         <div className="flex w-full items-center gap-8 rounded-xl border border-[#dddddd] bg-white p-8">
           <ProgressRing value={100} size={80} thickness={10} color="#11a84e" trackColor="#eaeded">
-            <span className="text-xl font-bold text-[#383838]">100%</span>
+            <span className="text-base font-bold text-[#383838]">100%</span>
             <span className="text-[10px] font-semibold text-[#4d4e50]">Complete</span>
           </ProgressRing>
           <div className="flex flex-col gap-1.5">

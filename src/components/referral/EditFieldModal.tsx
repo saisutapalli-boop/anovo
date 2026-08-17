@@ -2,11 +2,17 @@ import { useState } from 'react'
 import SidePanel from '@/components/ui/SidePanel'
 import Button from '@/components/ui/Button'
 
-export default function EditDrugStrengthModal({
+export default function EditFieldModal({
+  title,
+  fieldLabel,
+  description,
   initialValue,
   onClose,
   onSave,
 }: {
+  title: string
+  fieldLabel: string
+  description: string
   initialValue: string
   onClose: () => void
   onSave: (value: string) => void
@@ -15,7 +21,7 @@ export default function EditDrugStrengthModal({
 
   return (
     <SidePanel
-      title="Edit Drug Strength"
+      title={title}
       onClose={onClose}
       footer={
         <>
@@ -30,8 +36,8 @@ export default function EditDrugStrengthModal({
     >
       <div className="flex flex-col gap-2">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-[#666666]">Drug Strength</p>
-          <p className="mt-1 text-xs text-[#666666]">Update the extracted strength. Use the value shown on the referral / Rx.</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-[#666666]">{fieldLabel}</p>
+          <p className="mt-1 text-xs text-[#666666]">{description}</p>
         </div>
         <input
           value={value}
