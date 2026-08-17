@@ -34,7 +34,7 @@ interface Row {
 }
 
 const ROWS: Row[] = [
-  { id: '1', name: 'Sarah Mitchell', refId: 'ARX-1824-3842', therapy: 'Voxzogo (vosoritide)', payer: 'Aetna PPO', copay: '-$660', paStatus: 'Not Submitted', paTone: 'neutral', finAid: 'Not resolved', lastAction: 'PA In progress', step: 5 },
+  { id: '1', name: 'Sarah Mitchell', refId: 'ARX-1824-3842', therapy: 'Voxzogo (vosoritide)', payer: 'Aetna PPO', copay: '$2,480', paStatus: 'Not Submitted', paTone: 'neutral', finAid: 'Not resolved', lastAction: 'PA In progress', step: 5 },
   { id: '2', name: 'Michael Smith', refId: 'ARX-2816-8841', therapy: 'Infusita', payer: 'BlueCross PPO', copay: '$0 (PAP)', paStatus: 'Denied', paTone: 'error', finAid: '✓ Resolved', lastAction: 'Oct 24, 2024', step: 6 },
   { id: '3', name: 'Sonia Patel', refId: 'ARX-1816-0952', therapy: 'Altirel Sprinkle', payer: 'UMC Choice', copay: '$120', paStatus: 'Approved', paTone: 'success', finAid: '✓ Resolved', lastAction: 'Oct 23, 2024', step: 7 },
   {

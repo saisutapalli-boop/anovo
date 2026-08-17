@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { HelpCircle, AlertTriangle, CheckCircle2, Send, Workflow, Play } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { HelpCircle, AlertTriangle, CheckCircle2, Send, Workflow, Play, FileText } from 'lucide-react'
 import AppShell from '@/components/layout/AppShell'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
 import ProgressBar from '@/components/ui/ProgressBar'
 import Toast from '@/components/ui/Toast'
 import CaseActivityTimeline from '@/components/ui/CaseActivityTimeline'
@@ -90,6 +92,7 @@ function SimulationLauncherCard({ onStart }: { onStart: () => void }) {
 }
 
 export default function PriorAuthorizationDetailPage() {
+  const navigate = useNavigate()
   const { setPaSimulationComplete } = useDispensingCase()
   const { toast, showToast, clearToast } = useToast()
   const [visibleCount, setVisibleCount] = useState(0)
@@ -243,6 +246,18 @@ export default function PriorAuthorizationDetailPage() {
             }
           />
         )}
+
+        <div className="flex w-full flex-wrap items-center justify-between gap-4 rounded-xl border border-[#dddddd] bg-white p-6">
+          <p className="flex items-center gap-2 text-xs text-[#666666]">
+            <FileText className="size-3.5" />
+            {complete
+              ? 'PA approved for Sarah Mitchell · Voxzogo (vosoritide) · Aetna PPO · Est. patient copay $2,480. Ready to move to Dispensing.'
+              : 'Run the end-to-end simulation to complete prior authorization for Sarah Mitchell.'}
+          </p>
+          <Button disabled={!complete} onClick={() => navigate('/prior-authorization')}>
+            Complete PA Authorization &rarr;
+          </Button>
+        </div>
       </div>
 
       {toast && <Toast message={toast.message} tone={toast.tone} onDone={clearToast} />}
